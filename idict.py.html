@@ -1,0 +1,169 @@
+<html>
+<head>
+<title>idict.py</title>
+<link href="css/assignments.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<h3>idict.py (<a href="idict.py">plain text</a>)</h3>
+<hr>
+<pre>
+<span style="color: darkred">"""The idict module contains functions implementing the immutable dictionary
+(IDict) data abstraction for CS61A at UC Berkeley.
+
+IDicts are (immutable) dictionaries, a common data structure in computer
+science which maps keys to values.
+
+One might notice that none of the doctests for either ADT actually "show" an
+IDict. This is because this ADT is meant to be treated as a black box: the
+tests do not assume any specific implementation for IDicts.
+"""
+
+
+</span><span style="color: green; font-style: italic"># Immutable Dictionaries Abstraction
+
+
+</span><span style="color: blue; font-weight: bold">def </span>make_idict<span style="font-weight: bold">(*</span>mappings<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""Construct a new immutable dictionary using the mappings provided."""
+    </span><span style="color: blue; font-weight: bold">return </span>mappings
+
+
+<span style="color: blue; font-weight: bold">def </span>idict_keys<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""Return a tuple of the keys belonging to idict.
+
+    &gt;&gt;&gt; test_idict = make_idict(("A", 1),
+    ...                         ("B", 2),
+    ...                         ("C", 3))
+    ...
+    &gt;&gt;&gt; idict_keys(test_idict)
+    ('A', 'B', 'C')
+    &gt;&gt;&gt; idict_keys(make_idict())
+    ()
+    """
+    </span><span style="color: blue; font-weight: bold">return </span>tuple<span style="font-weight: bold">(</span>mapping<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">] </span><span style="color: blue; font-weight: bold">for </span>mapping <span style="color: blue; font-weight: bold">in </span>idict<span style="font-weight: bold">)
+
+
+</span><span style="color: blue; font-weight: bold">def </span>idict_select<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">, </span>key<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""Return the value that key maps to in immutable dictionary idict.
+
+    Returns None if the key is not present in idict.
+    
+    &gt;&gt;&gt; test_idict = make_idict(("A", 1),
+    ...                         ("B", 2),
+    ...                         ("C", 3))
+    ...
+    &gt;&gt;&gt; idict_select(test_idict, "Z")
+    &gt;&gt;&gt; idict_select(test_idict, "A")
+    1
+    &gt;&gt;&gt; idict_select(test_idict, "B")
+    2
+    """
+    </span><span style="color: blue; font-weight: bold">for </span>mapping <span style="color: blue; font-weight: bold">in </span>idict<span style="font-weight: bold">:
+        </span><span style="color: blue; font-weight: bold">if </span>mapping<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">] == </span>key<span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">return </span>mapping<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">]
+
+
+</span><span style="color: blue; font-weight: bold">def </span>could_be_idict<span style="font-weight: bold">(</span>x<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""Returns True if x could be an idict."""
+    </span><span style="color: blue; font-weight: bold">if </span>type<span style="font-weight: bold">(</span>x<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">is not </span>tuple<span style="font-weight: bold">:
+        </span><span style="color: blue; font-weight: bold">return False
+    for </span>mapping <span style="color: blue; font-weight: bold">in </span>x<span style="font-weight: bold">:
+        </span><span style="color: blue; font-weight: bold">if </span>type<span style="font-weight: bold">(</span>mapping<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">is not </span>tuple <span style="color: blue; font-weight: bold">or </span>len<span style="font-weight: bold">(</span>mapping<span style="font-weight: bold">) != </span><span style="color: red">2</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">return False
+    return True
+
+
+</span><span style="color: green; font-style: italic"># Immutable Dictionaries Utility Functions
+
+
+</span><span style="color: blue; font-weight: bold">def </span>idict_insert<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">, </span>key<span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""Return a copy of idict updated with key mapped to value.
+
+    Replaced keys will show up at the end of the dictionary.
+
+    &gt;&gt;&gt; test_idict = make_idict(("A", 1),
+    ...                         ("B", 2),
+    ...                         ("C", 3))
+    ...
+    &gt;&gt;&gt; idict_str(test_idict)
+    "('A' -&gt; 1, 'B' -&gt; 2, 'C' -&gt; 3)"
+    &gt;&gt;&gt; idict_select(test_idict, "Z")
+    &gt;&gt;&gt; idict_select(test_idict, "A")
+    1
+    &gt;&gt;&gt; idict_select(test_idict, "B")
+    2
+    &gt;&gt;&gt; test_idict = idict_insert(test_idict, "A", 42)
+    &gt;&gt;&gt; idict_str(test_idict)
+    "('B' -&gt; 2, 'C' -&gt; 3, 'A' -&gt; 42)"
+    &gt;&gt;&gt; test_idict = idict_insert(test_idict, "Z", 7)
+    &gt;&gt;&gt; idict_str(test_idict)
+    "('B' -&gt; 2, 'C' -&gt; 3, 'A' -&gt; 42, 'Z' -&gt; 7)"
+    &gt;&gt;&gt; idict_select(test_idict, "Z")
+    7
+    &gt;&gt;&gt; idict_select(test_idict, "A")
+    42
+    &gt;&gt;&gt; idict_select(test_idict, "B")
+    2
+    """
+    </span>new_mappings <span style="font-weight: bold">= ()
+    </span><span style="color: blue; font-weight: bold">for </span>old_key <span style="color: blue; font-weight: bold">in </span>idict_keys<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">if </span>old_key <span style="font-weight: bold">!= </span>key<span style="font-weight: bold">:
+            </span>new_mappings <span style="font-weight: bold">+= ((</span>old_key<span style="font-weight: bold">, </span>idict_select<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">, </span>old_key<span style="font-weight: bold">)),)
+    </span>new_mappings <span style="font-weight: bold">+= ((</span>key<span style="font-weight: bold">, </span>value<span style="font-weight: bold">),)
+    </span><span style="color: blue; font-weight: bold">return </span>make_idict<span style="font-weight: bold">(*</span>new_mappings<span style="font-weight: bold">)
+
+
+</span><span style="color: blue; font-weight: bold">def </span>idict_len<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""Return the number of mappings in idict.
+
+    &gt;&gt;&gt; idict_len(make_idict(("A", 1), ("B", 2)))
+    2
+    &gt;&gt;&gt; idict_len(make_idict(("A", 1)))
+    1
+    &gt;&gt;&gt; idict_len(make_idict())
+    0
+    """
+    </span><span style="color: blue; font-weight: bold">return </span>len<span style="font-weight: bold">(</span>idict_keys<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">))
+
+
+</span><span style="color: blue; font-weight: bold">def </span>idict_values<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""Return a tuple of the values mapped to in idict.
+
+    &gt;&gt;&gt; idict_values(make_idict(("A", 1), ("B", 2), ("C", 3)))
+    (1, 2, 3)
+    &gt;&gt;&gt; idict_values(make_idict())
+    ()
+    """
+    </span><span style="color: blue; font-weight: bold">return </span>tuple<span style="font-weight: bold">(</span>idict_select<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">, </span>key<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">for </span>key <span style="color: blue; font-weight: bold">in </span>idict_keys<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">))
+
+
+</span><span style="color: blue; font-weight: bold">def </span>idict_str<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""Return a string representation of the idict.
+    
+    &gt;&gt;&gt; idict_str(make_idict())
+    '()'
+    &gt;&gt;&gt; idict_str(make_idict(("A", 1), ("B", 2), ("C", 3)))
+    "('A' -&gt; 1, 'B' -&gt; 2, 'C' -&gt; 3)"
+    &gt;&gt;&gt; idict_str(make_idict(("A", 1)))
+    "('A' -&gt; 1)"
+    """
+    </span>result <span style="font-weight: bold">= </span><span style="color: red">"("
+    </span>is_first <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+    for </span>key <span style="color: blue; font-weight: bold">in </span>idict_keys<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">):
+        </span><span style="color: green; font-style: italic"># Add comma if necessary
+        </span><span style="color: blue; font-weight: bold">if not </span>is_first<span style="font-weight: bold">:
+            </span>result <span style="font-weight: bold">+= </span><span style="color: red">", "
+        </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+            </span>is_first <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+        </span>result <span style="font-weight: bold">+= </span>repr<span style="font-weight: bold">(</span>key<span style="font-weight: bold">) + </span><span style="color: red">" -&gt; " </span><span style="font-weight: bold">+ </span>repr<span style="font-weight: bold">(</span>idict_select<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">, </span>key<span style="font-weight: bold">))
+    </span><span style="color: blue; font-weight: bold">return </span>result <span style="font-weight: bold">+ </span><span style="color: red">")"
+
+</span><span style="color: blue; font-weight: bold">def </span>idict_items<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""Return a tuple of key:value pairs from the idict."""
+
+    </span><span style="color: blue; font-weight: bold">return </span>tuple<span style="font-weight: bold">(</span>zip<span style="font-weight: bold">(</span>idict_keys<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">), </span>idict_values<span style="font-weight: bold">(</span>idict<span style="font-weight: bold">)))
+</span>
+</pre>
+</body>
+</html>
